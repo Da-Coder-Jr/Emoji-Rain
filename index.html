@@ -2,15 +2,216 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
-    <title>Emoji Rain 😱✨</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Emoji Rain Extravaganza 😂🌈✨</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        /* Animated Background Gradient */
+        body {
+            background: linear-gradient(135deg, #ff9ff3, #feca57, #ff6b6b, #48dbfb);
+            background-size: 600% 600%;
+            animation: gradientAnimation 10s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            25%{ background-position: 50% 50%; }
+            50%{ background-position: 100% 50%; }
+            75%{ background-position: 50% 50%; }
+            100%{background-position: 0% 50%; }
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5em;
+            margin-top: 20px;
+            text-shadow: 2px 2px #000;
+        }
+
+        p, label {
+            color: #fff;
+            font-size: 1.2em;
+            margin: 10px;
+            text-shadow: 1px 1px #000;
+        }
+
+        .controls {
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .controls button, .controls select {
+            font-size: 1em;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .controls button {
+            background: #1dd1a1;
+            color: #fff;
+            box-shadow: 1px 1px 3px #000;
+        }
+
+        .controls button:hover {
+            background: #10ac84;
+        }
+
+        .controls select {
+            background: #ff9ff3;
+            color: #fff;
+            box-shadow: 1px 1px 3px #000;
+        }
+
+        #emoji-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: fall linear forwards;
+            opacity: 0;
+            transform: translateX(-50%);
+            user-select: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateX(-50%) translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Emoji Rain! 😍🌈</h1>
-    <p>Watch as random emojis sprinkle down the screen, making it a magical experience! 😂</p>
+
+    <h1>Emoji Rain Extravaganza! 😂🌈✨</h1>
+    <p>Enjoy a rain of fun emojis! Pick a theme, start/stop the rain, and watch the magic happen!</p>
+
+    <div class="controls">
+        <label for="emojiSet">Emoji Theme:</label>
+        <select id="emojiSet">
+            <option value="happy">Happy</option>
+            <option value="nature">Nature</option>
+            <option value="food">Food</option>
+            <option value="random">Random Mix</option>
+        </select>
+
+        <button id="toggleRainBtn">Stop Rain</button>
+    </div>
+
     <div id="emoji-container"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Hey Calder! 😂 Let's make it SUPER COOL in ONE FILE!
+
+        // Define different emoji sets for variety
+        const emojiSets = {
+            happy: ["😂","😍","✨","💕","😜","🤩","😱","💖","🌈","😆","🎉","🤪"],
+            nature: ["🍀","🌸","🌻","🌿","🌕","⭐","🌈","🔥","🌊","🦋","🦄"],
+            food: ["🍕","🍿","🍎","🍉","🍭","🥑","🍔","🍟","🥕","🍇","🍩"],
+            random: ["😂","😜","🦄","🔥","🍕","🌸","⭐","💖","🍀","🌈","🤩","🤯","🍿","🌊","🍟","🥕"]
+        };
+
+        let currentSet = emojiSets['happy'];
+        const emojiContainer = document.getElementById('emoji-container');
+        const emojiSelect = document.getElementById('emojiSet');
+        const toggleBtn = document.getElementById('toggleRainBtn');
+
+        let raining = true; // Controls if the emojis are currently falling
+        let spawnInterval = 300; // milliseconds between new emojis
+        let spawnTimer;
+
+        emojiSelect.addEventListener('change', () => {
+            const val = emojiSelect.value;
+            currentSet = emojiSets[val];
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            raining = !raining;
+            if (raining) {
+                toggleBtn.textContent = "Stop Rain";
+                startRain();
+            } else {
+                toggleBtn.textContent = "Start Rain";
+                stopRain();
+            }
+        });
+
+        function randomEmoji() {
+            return currentSet[Math.floor(Math.random() * currentSet.length)];
+        }
+
+        function randomXPosition() {
+            return Math.floor(Math.random() * 100); // percent of viewport width
+        }
+
+        function spawnEmoji() {
+            if (!raining) return;
+            const emojiEl = document.createElement('div');
+            emojiEl.className = 'emoji';
+            emojiEl.textContent = randomEmoji();
+
+            const x = randomXPosition();
+            emojiEl.style.left = x + 'vw';
+            emojiEl.style.top = '-100px';
+            
+            // Random size variation
+            const randomSize = (2 + Math.random() * 2) + 'rem';
+            emojiEl.style.fontSize = randomSize;
+            
+            // Random duration of fall
+            const duration = 4 + Math.random() * 6; // between 4 and 10 seconds
+            emojiEl.style.animationDuration = duration + 's';
+
+            emojiContainer.appendChild(emojiEl);
+
+            // Remove emoji after animation ends
+            setTimeout(() => {
+                if (emojiContainer.contains(emojiEl)) {
+                    emojiContainer.removeChild(emojiEl);
+                }
+            }, duration * 1000);
+        }
+
+        function startRain() {
+            spawnTimer = setInterval(spawnEmoji, spawnInterval);
+        }
+
+        function stopRain() {
+            clearInterval(spawnTimer);
+        }
+
+        // Start raining on load
+        startRain();
+    </script>
 </body>
 </html>
